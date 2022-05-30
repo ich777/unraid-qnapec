@@ -106,7 +106,7 @@ else
 fi
 
 echo
-echo "---------------Installation of QNAP-EC package successful------------------"
+echo "---------------Installation of QNAP-EC package successful-------------------"
 echo
 
 </INLINE>
