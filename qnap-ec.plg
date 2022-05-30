@@ -94,7 +94,7 @@ install() {
 #Install QNAP-EC package
 /sbin/installpkg "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz"
 depmod -a 2&gt;/dev/null
-/sbin/modprobe qnap-ec 2&gt;/dev/null || echo "---Error loading module, please post your Diagnostics on the support thread!---"
+/sbin/modprobe qnap-ec || echo "---Error loading module, please post your Diagnostics on the support thread!---"
 }
 
 #Check if QNAP-EC package is already downloaded and installed
