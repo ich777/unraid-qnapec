@@ -92,7 +92,7 @@ fi
 
 install() {
 #Install QNAP-EC package
-/sbin/installpkg "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz"
+/sbin/installpkg "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" 2&gt;/dev/null
 depmod -a 2&gt;/dev/null
 /sbin/modprobe qnap-ec || echo "---Error loading module, please post your Diagnostics on the support thread!---"
 }
