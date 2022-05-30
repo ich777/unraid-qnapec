@@ -100,7 +100,7 @@ depmod -a 2&gt;/dev/null
 #Check if QNAP-EC package is already downloaded and installed
 check
 if [ ! "$(lsmod | grep "qnap-ec")" ]; then
-  install > /dev/null
+  install
 else
   echo "------------Nothing to do, QNAP-EC package allready installed!-------------"
 fi
