@@ -99,14 +99,14 @@ depmod -a 2&gt;/dev/null
 
 #Check if QNAP-EC package is already downloaded and installed
 check
-if [ ! "$(lsmod | grep "usbserial")" ]; then
+if [ ! "$(lsmod | grep "qnap-ec")" ]; then
   install > /dev/null
 else
-  echo "-----------Nothing to do, QNAP-EC package allready installed!------------"
+  echo "------------Nothing to do, QNAP-EC package allready installed!-------------"
 fi
 
 echo
-echo "--------------Installation of QNAP-EC package successful-----------------"
+echo "---------------Installation of QNAP-EC package successful------------------"
 echo
 
 </INLINE>
