@@ -28,7 +28,7 @@ rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|grep -v '&version
 <INLINE>
 **QNAP-EC**
   
-This package contains and installs the QNAP Embedded Controller chip Kernel module, this allows you to read fan speeds and temperatures as well as reading and writing the fan P.W.M. values from the ITE Tech Inc. IT8528 embedded controller chip.  
+This package contains and installs the QNAP Embedded Controller chip Kernel module, this allows you to read fan speeds and temperatures as well as reading and writing the fan PWM values from the ITE Tech Inc. IT8528 embedded controller chip.  
 Currently know supported units are: TS-473A, TS-673A, TS-873A, TS-453Be, TS-877, TS-1677x, TS-253B
   
 Source: https://github.com/Stonyx/QNAP-EC
