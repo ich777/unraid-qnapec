@@ -2,27 +2,26 @@
 <!DOCTYPE PLUGIN [
   <!ENTITY name      "qnap-ec">
   <!ENTITY author    "ich777">
-  <!ENTITY version   "2022.05.30">
+  <!ENTITY version   "2022.07.19">
   <!ENTITY gitURL    "https://github.com/&author;/unraid-qnapec/raw/master">
   <!ENTITY pluginURL "&gitURL;/&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+  <!ENTITY packages  "/boot/config/plugins/&name;/packages">
 ]>
 
 <PLUGIN  name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.10.2" support="https://forums.unraid.net/topic/92865-support-ich777-amd-vendor-reset-coraltpu-hpsahba/">
 
 <CHANGES>
 
+###2022.07.19
+- Necessary changes for unRAID 6.11+
+- Cleanup
+
 ###2022.05.30
 - Initial release
 
 </CHANGES>
-
-<FILE Run="/bin/bash">
-<INLINE>
-rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|grep -v '&version;')
-</INLINE>
-</FILE>
 
 <FILE Name="&emhttp;/README.md">
 <INLINE>
@@ -38,29 +37,13 @@ Source: https://github.com/Stonyx/QNAP-EC
 <FILE Run="/bin/bash">
 <INLINE>
 
-KERNEL_V="$(uname -r)"
-PACKAGE="qnapec-plugin-$KERNEL_V"
-DL_URL="https://github.com/ich777/unraid-qnapec/releases/download/$KERNEL_V"
-
-#Wait for Network and timeout after 30 seconds
-HOST="8.8.8.8"
-for i in {1..10}; do
-  ping -c1 $HOST &amp;> /dev/null &amp;&amp; break;
-done
-
-if [ ! -d "&plugin;/packages/${KERNEL_V%%-*}" ]; then
-  mkdir -p "&plugin;/packages/${KERNEL_V%%-*}"
-fi
-
-#Check for old packages
-rm -rf $(ls -d &plugin;/packages/* | grep -v "${KERNEL_V%%-*}")
-
 download() {
-#Download QNAP-EC package
-if wget -q -nc --show-progress --progress=bar:force:noscroll -O "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" "${DL_URL}/${PACKAGE}-1.txz" ; then
-  if [ "$(md5sum "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" | cut -d ' ' -f1)" != "$(wget -qO- "${DL_URL}/${PACKAGE}-1.txz.md5" | cut -d ' ' -f1)" ]; then
+# Download QNAP-EC package
+if wget -q -nc --show-progress --progress=bar:force:noscroll -O "&packages;/${KERNEL_V%%-*}/${PACKAGE}-1.txz" "${DL_URL}/${PACKAGE}-1.txz" ; then
+  if [ "$(md5sum "&packages;/${KERNEL_V%%-*}/${PACKAGE}-1.txz" | cut -d ' ' -f1)" != "$(wget -qO- "${DL_URL}/${PACKAGE}-1.txz.md5" | cut -d ' ' -f1)" ]; then
     echo
     echo "---CHECKSUM ERROR!---"
+    rm -rf &plugin; &emhttp;
     exit 1
   fi
   echo
@@ -68,21 +51,23 @@ if wget -q -nc --show-progress --progress=bar:force:noscroll -O "&plugin;/packag
 else
   echo
   echo "-----------------------Can't download QNAP-EC package-----------------------"
+  rm -rf &plugin; &emhttp;
   exit 1
 fi
 }
 
 check() {
-if [ ! -f "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
+if [ ! -f "&packages;/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
   echo
   echo "-----------------------Downloading QNAP-EC package!-------------------------"
   echo "--------This could take some time, please don't close this window!----------"
   download
-elif [ ! -s "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
-  rm -rf &plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz
+elif [ ! -s "&packages;/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
+  rm -rf &packages;/${KERNEL_V%%-*}/${PACKAGE}-1.txz
   echo
   echo "----Download is empty please contact the developer of this plugin if the----"
   echo "---------plugin has been already built against that Kernel version----------"
+  rm -rf &plugin; &emhttp;
   exit 1
 else
   echo
@@ -91,18 +76,35 @@ fi
 }
 
 install() {
-#Install QNAP-EC package
-/sbin/installpkg "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" 2&gt;/dev/null
+# Install QNAP-EC package
+/sbin/installpkg "&packages;/${KERNEL_V%%-*}/${PACKAGE}-1.txz" 2&gt;/dev/null
 depmod -a 2&gt;/dev/null
+}
+
+activate() {
+# Modprobe module
 /sbin/modprobe qnap-ec || echo "-Error loading module, please post your Diagnostics on the support thread!-"
 }
 
-#Check if QNAP-EC package is already downloaded and installed
+# Define Variables
+KERNEL_V="$(uname -r)"
+PACKAGE="qnapec-plugin-$KERNEL_V"
+DL_URL="https://github.com/ich777/unraid-qnapec/releases/download/$KERNEL_V"
+
+if [ ! -d "&packages;/${KERNEL_V%%-*}" ]; then
+  mkdir -p "&packages;/${KERNEL_V%%-*}"
+fi
+
+# Check for old packages
+rm -rf $(ls -d &packages;/* | grep -v "${KERNEL_V%%-*}")
+
+# Check if QNAP-EC package is already downloaded and installed
 check
-if [ ! "$(lsmod | grep "qnap-ec")" ]; then
+if ! modinfo qnap-ec -0 >/dev/null 2>&amp;1 ; then
   install
+  activate
 else
-  echo "------------Nothing to do, QNAP-EC package allready installed!-------------"
+  activate
 fi
 
 echo
@@ -119,7 +121,7 @@ echo "--------------------------"
 echo "---Uninstalling QNAP-EC---"
 echo "--------------------------"
 # Remove plugin related files
-rm -rf /usr/local/emhttp/plugins/&name;
+rm -rf &emhttp;
 rm -rf &plugin;
 echo
 echo "-----------------------------------------------------"
