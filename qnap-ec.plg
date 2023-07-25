@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
   <!ENTITY name      "qnap-ec">
   <!ENTITY author    "ich777">
-  <!ENTITY version   "2022.07.21">
+  <!ENTITY version   "2023.07.25">
   <!ENTITY gitURL    "https://github.com/&author;/unraid-qnapec/raw/master">
   <!ENTITY pluginURL "&gitURL;/&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
@@ -13,6 +13,10 @@
 <PLUGIN  name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.10.2" support="https://forums.unraid.net/topic/92865-support-ich777-amd-vendor-reset-coraltpu-hpsahba/">
 
 <CHANGES>
+
+###2023.07.25
+- Fixed typo, thanks to user -C- from the unRAID Forums
+- Added TS-453A to known supported units list, thanks to user Lavoslav from the unRAID Forums
 
 ###2022.07.21
 - Version detection from package via GitHub API
@@ -32,7 +36,7 @@
 **QNAP-EC**
   
 This package contains and installs the QNAP Embedded Controller chip Kernel module, this allows you to read fan speeds and temperatures as well as reading and writing the fan PWM values from the ITE Tech Inc. IT8528 embedded controller chip.  
-Currently know supported units are: TS-473A, TS-673A, TS-873A, TS-453Be, TS-877, TS-1677x, TS-253B
+Currently known supported units are: TS-473A, TS-673A, TS-873A, TS-453Be, TS-877, TS-1677x, TS-253B, TS-453A
   
 Source: https://github.com/Stonyx/QNAP-EC
 </INLINE>
