@@ -86,7 +86,7 @@ depmod -a 2&gt;/dev/null
 
 activate() {
 # Modprobe module
-/sbin/modprobe qnap-ec || echo "-Error loading module, please post your Diagnostics on the support thread!-"
+/sbin/modprobe qnap-ec check-for-chip=no || echo "-Error loading module, please post your Diagnostics on the support thread!-"
 }
 
 # Define Variables
